@@ -1,0 +1,8 @@
+## pip project requirements
+
+tornado==2.2.1
+pycurl==7.19.0
+dropbox==1.4
+ujson
+mako
+

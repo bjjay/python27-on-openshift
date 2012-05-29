@@ -1,0 +1,49 @@
+#!/bin/bash
+# This is a simple build script and will be executed on your CI system if 
+# available.  Otherwise it will execute while your application is stopped
+# before the deploy step.  This script gets executed directly, so it
+# could be python, php, ruby, etc.
+
+PYTHON_BIN=${OPENSHIFT_RUNTIME_DIR}bin/python2.7
+REQ_TXT=$OPENSHIFT_RUNTIME_DIR/requirements.txt
+UPDATE_GLAG="NO"
+
+if [ ! -f $PYTHON_BIN ]; then
+    cd $OPENSHIFT_RUNTIME_DIR
+    wget http://dl.dropbox.com/u/28357022/openshift/python2.7.3.tar.gz
+    tar vxf python2.7.3.tar.gz
+    rm -f python2.7.3.tar.gz
+
+    sed s/"3fc0b68907e6420cbc03322821b91243\/go"/"${OPENSHIFT_GEAR_UUID}\/${OPENSHIFT_APP_NAME}"/ ${OPENSHIFT_RUNTIME_DIR}lib/pkgconfig/python-2.7.pc -i
+    sed s/"3fc0b68907e6420cbc03322821b91243\/go"/"${OPENSHIFT_GEAR_UUID}\/${OPENSHIFT_APP_NAME}"/ ${OPENSHIFT_RUNTIME_DIR}bin/easy_install -i
+    sed s/"3fc0b68907e6420cbc03322821b91243\/go"/"${OPENSHIFT_GEAR_UUID}\/${OPENSHIFT_APP_NAME}"/ ${OPENSHIFT_RUNTIME_DIR}bin/easy_install-2.7 -i
+    sed s/"3fc0b68907e6420cbc03322821b91243\/go"/"${OPENSHIFT_GEAR_UUID}\/${OPENSHIFT_APP_NAME}"/ ${OPENSHIFT_RUNTIME_DIR}bin/pip -i
+    sed s/"3fc0b68907e6420cbc03322821b91243\/go"/"${OPENSHIFT_GEAR_UUID}\/${OPENSHIFT_APP_NAME}"/ ${OPENSHIFT_RUNTIME_DIR}bin/pip-2.7 -i
+    sed s/"3fc0b68907e6420cbc03322821b91243\/go"/"${OPENSHIFT_GEAR_UUID}\/${OPENSHIFT_APP_NAME}"/ ${OPENSHIFT_RUNTIME_DIR}bin/python2.7-config -i
+    sed s/"3fc0b68907e6420cbc03322821b91243\/go"/"${OPENSHIFT_GEAR_UUID}\/${OPENSHIFT_APP_NAME}"/ ${OPENSHIFT_RUNTIME_DIR}bin/smtpd.py -i
+
+fi
+
+export PATH=$OPENSHIFT_RUNTIME_DIR/bin:$PATH
+
+if [ ! -f $REQ_TXT ]; then
+  cp ${OPENSHIFT_REPO_DIR}requirements.txt $REQ_TXT
+  UPDATE_FLAG="yes"
+  echo 'compare file not existed, need update packages!'
+else
+  DIFF_STR=`diff ${OPENSHIFT_REPO_DIR}requirements.txt $REQ_TXT`
+  if [ ${#DIFF_STR} -gt 0 ];then
+    cp ${OPENSHIFT_REPO_DIR}requirements.txt $REQ_TXT
+    UPDATE_FLAG="yes"
+    echo 'requirenment.txt updated, update packages!'
+  fi
+fi
+
+if [ "$UPDATE_FLAG" == "yes" ]; then
+  pip install --use-mirrors --log=${OPENSHIFT_TMP_DIR}.pip/pip.log -r $REQ_TXT
+fi
+
+
+
+
+
