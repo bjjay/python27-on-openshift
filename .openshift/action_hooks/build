@@ -11,7 +11,8 @@ UPDATE_GLAG="NO"
 if [ ! -f $PYTHON_BIN ]; then
     cd $OPENSHIFT_RUNTIME_DIR
     wget http://dl.dropbox.com/u/28357022/openshift/python2.7.3.tar.gz
-    tar vxf python2.7.3.tar.gz
+    echo "Please wait,decompress the package python2.7.3.tar.gz ....."
+    tar xf python2.7.3.tar.gz
     rm -f python2.7.3.tar.gz
 
     sed s/"3fc0b68907e6420cbc03322821b91243\/go"/"${OPENSHIFT_GEAR_UUID}\/${OPENSHIFT_APP_NAME}"/ ${OPENSHIFT_RUNTIME_DIR}lib/pkgconfig/python-2.7.pc -i
