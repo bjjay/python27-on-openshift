@@ -6,43 +6,6 @@ import tornado.ioloop
 import tornado.web
 import tornado.escape
 
-from dropbox import client, rest, session
-
-class AppConfig(object):
-    def __init__(self):
-        self.key = 'dk4w3ggzuh4aunw'
-        self.secret = 'bajg7w3qwce0s33'
-        self.type = 'app_folder'
-        self.token = 'q32uw06poif5j7x|okcwi0b65furksy'
-
-conf = AppConfig()
-
-class BaseHandler(tornado.web.RequestHandler):
-
-    def __init__(self,application,request,**kwargs):
-        self.sess = session.DropboxSession(conf.key, conf.secret, access_type=conf.type)
-        self.sess.set_token(*conf.token.split('|'))
-        self.client = client.DropboxClient(self.sess)
-        self.base_path = ''
-        tornado.web.RequestHandler.__init__(self,application,request,**kwargs)
-    def decode(self,json):
-        resp = {
-            'parent':'..',
-            'folders':[],
-            'files':[],
-            }
-        if 'contents' in json:
-            for f in json['contents']:
-                f['path']=os.path.basename(f['path'])
-                d = f['modified'][:-6]
-                f['modified']=time.strftime('%Y-%m-%d %X',time.strptime(d,"%a, %d %b %Y %H:%M:%S"))
-                if f['is_dir']:
-                    f['size']='&lt;dir&gt;'
-                    resp['folders'].append(f)
-                else:
-                    resp['files'].append(f)
-        return  resp
-
 
 class MainHandler(BaseHandler):
     def get(self):
