@@ -7,7 +7,7 @@ import tornado.web
 import tornado.escape
 
 
-class MainHandler(BaseHandler):
+class MainHandler(tornado.web.RequestHandler):
     def get(self):
         output =['Hello world!']
         output.append('by Tornado:'+ tornado.version)
