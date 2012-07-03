@@ -5,8 +5,8 @@
 # could be python, php, ruby, etc.
 
 PYTHON_BIN=${OPENSHIFT_RUNTIME_DIR}bin/python2.7
-REQ_TXT=$OPENSHIFT_RUNTIME_DIR/requirements.txt
-UPDATE_GLAG="NO"
+REQ_TXT=${OPENSHIFT_RUNTIME_DIR}/requirements.txt
+UPDATE_FLAG="NO"
 
 if [ ! -f $PYTHON_BIN ]; then
     cd $OPENSHIFT_RUNTIME_DIR
